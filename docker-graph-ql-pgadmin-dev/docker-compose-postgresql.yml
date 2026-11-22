@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:18-alpine
+    volumes:
+      - ./init-db/:/docker-entrypoint-initdb.d/
+      #- postgres_data:/var/lib/postgresql/data  # this  is where the data is stored
+    container_name: postgres-db
+    environment:
+      - POSTGRES_DB=gscience-security-dev
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST_AUTH_METHOD=trust # Hiermee voorkom je de pg_hba.conf fout lokaal
+    ports:
+      - "5433:5432"
+    networks:
+      - app-net
+    restart: unless-stopped
+
+networks:
+  app-net:
+    external: true
+volumes:
+  postgres_data:
+

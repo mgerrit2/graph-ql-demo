@@ -1,0 +1,15 @@
+pgadmin:
+  image: dpage/pgadmin4:9.15
+  container_name: pgadmin-ui
+  environment:
+    - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+    - PGADMIN_DEFAULT_PASSWORD=admin
+    - PGADMIN_CONFIG_SERVER_MODE=False # You don't have to login every time
+    - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False # You don't have to login every time
+  volumes:
+    - ./servers.json:/pgadmin4/servers.json
+    - ./pgpass:/tmp/pgpass
+  ports:
+    - "8081:80" # Ga naar localhost:8081 in je browser
+  depends_on:
+    - db
