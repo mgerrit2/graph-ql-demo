@@ -29,4 +29,13 @@ GraphQL's biggest advantage is **client-driven data fetching**—instead of the 
 
 ### Practical Nuance (Trade-offs to Keep in Mind)
 
-GraphQL shines in **complex UIs, mobile apps with tight bandwidth, and multi-source aggregation**, but it adds complexity around **query cost/depth limiting** (to prevent expensive nested queries), **N+1 query resolution** (typically solved with DataLoader batching), and **HTTP caching** compared to straightforward CRUD REST APIs.
+GraphQL shines in **complex UIs, mobile apps with tight bandwidth, and multi-source aggregation**, 
+but it adds complexity around **query cost/depth limiting** (to prevent expensive nested queries), 
+**N+1 query resolution** (typically solved with DataLoader batching), and **HTTP caching** compared to straightforward CRUD REST APIs.
+
+
+## Graphql
+[Graphql ui](http://localhost:8080/graphiql)
+
+## Swagger
+[swagger](http://localhost:8080/swagger-ui/index.html)
