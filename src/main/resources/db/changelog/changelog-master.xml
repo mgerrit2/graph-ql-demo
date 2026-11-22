@@ -1,0 +1,93 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+
+
+
+
+    <changeSet author="gerrit2 (persons-table)" id="create-person:1" context="dev">
+        <comment>Creating the person table for human resources.</comment>
+        <createTable tableName="person">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="persons_pkey"/>
+            </column>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+            <column defaultValueBoolean="true" name="active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_modified_by" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="email" type="varchar(255)"/>
+            <column name="record_version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="gerrit2 (persons-table)" id="insert-test-users:1" context="dev">
+        <comment>Inserting 4 test users for development environment.</comment>
+
+        <!-- User 1: Active Admin -->
+        <insert tableName="person">
+            <column name="first_name" value="John"/>
+            <column name="last_name" value="Doe"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_at" valueDate="2026-06-01T08:00:00"/>
+            <column name="created_by" value="system"/>
+            <column name="email" value="john.doe@example.com"/>
+            <column name="record_version" valueNumeric="0"/>
+        </insert>
+
+        <!-- User 2: Active User -->
+        <insert tableName="person">
+            <column name="first_name" value="Jane"/>
+            <column name="last_name" value="Smith"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_at" valueDate="2026-06-02T09:30:00"/>
+            <column name="created_by" value="system"/>
+            <column name="email" value="jane.smith@example.com"/>
+            <column name="record_version" valueNumeric="0"/>
+        </insert>
+
+        <!-- User 3: Inactive User -->
+        <insert tableName="person">
+            <column name="first_name" value="Bob"/>
+            <column name="last_name" value="Johnson"/>
+            <column name="active" valueBoolean="false"/>
+            <column name="created_at" valueDate="2026-06-03T11:15:00"/>
+            <column name="created_by" value="admin"/>
+            <column name="email" value="bob.johnson@example.com"/>
+            <column name="record_version" valueNumeric="0"/>
+        </insert>
+
+        <!-- User 4: Active Manager -->
+        <insert tableName="person">
+            <column name="first_name" value="Alice"/>
+            <column name="last_name" value="Williams"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_at" valueDate="2026-06-04T14:45:00"/>
+            <column name="created_by" value="admin"/>
+            <column name="email" value="alice.williams@example.com"/>
+            <column name="record_version" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+
+</databaseChangeLog>
