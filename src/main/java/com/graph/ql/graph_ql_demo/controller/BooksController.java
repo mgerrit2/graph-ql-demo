@@ -77,6 +77,9 @@ public class BooksController {
         return bookMapper.toResponseDtoList(bookRepository.findAll());
     }
 
+    /**
+     * Returns a single book by ID, caching the response DTO in Redis under {@code books::<id>}.
+     */
     @QueryMapping
     @Cacheable(value = "books", key = "#id")
     @Transactional(readOnly = true)
@@ -86,6 +89,9 @@ public class BooksController {
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
     }
 
+    /**
+     * Creates a new book linked to an existing person and caches the result under {@code books::<id>}.
+     */
     @MutationMapping
     @CachePut(value = "books", key = "#result.id")
     @Transactional
@@ -99,6 +105,9 @@ public class BooksController {
         return bookMapper.toResponseDto(saved);
     }
 
+    /**
+     * Updates an existing book (including reassigning its owner if changed) and refreshes its Redis cache entry.
+     */
     @MutationMapping
     @CachePut(value = "books", key = "#id")
     @Transactional
@@ -119,6 +128,9 @@ public class BooksController {
         return bookMapper.toResponseDto(saved);
     }
 
+    /**
+     * Soft-deletes a book via {@code @SQLDelete} on {@link BookEntity} and evicts {@code books::<id>} from Redis.
+     */
     @MutationMapping
     @CacheEvict(value = "books", key = "#id")
     @Transactional
