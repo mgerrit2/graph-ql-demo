@@ -27,15 +27,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * GraphQL controller handling book queries, mutations, Redis cache updates,
+ * and batched resolution of {@code Person.books}.
+ */
 @Log4j2
 @Controller
 @RequiredArgsConstructor
 public class BooksController {
 
+    //region aot
     private final BookRepository bookRepository;
     private final PersonRepository personRepository;
     private final BookMapper bookMapper;
+    //endregion
 
+
+    /**
+     * Batch-loads books for all {@link PersonRequestDto} items in a single GraphQL execution
+     * to avoid N+1 database queries when resolving {@code Person.books}.
+     */
     @BatchMapping(typeName = "Person", field = "books")
     @Transactional(readOnly = true)
     public Map<PersonRequestDto, List<BookResponseDto>> books(List<PersonRequestDto> persons) {
@@ -57,6 +68,9 @@ public class BooksController {
                 ));
     }
 
+    /**
+     * Returns all active books (filtered by {@code @SQLRestriction("active = true")} on {@link BookEntity}).
+     */
     @QueryMapping
     @Transactional(readOnly = true)
     public List<BookResponseDto> books() {
