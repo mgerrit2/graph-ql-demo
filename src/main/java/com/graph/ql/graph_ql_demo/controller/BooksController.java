@@ -13,6 +13,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -61,6 +64,7 @@ public class BooksController {
     }
 
     @QueryMapping
+    @Cacheable(value = "books", key = "#id")
     @Transactional(readOnly = true)
     public BookResponseDto bookById(@Argument Long id) {
         return bookRepository.findById(id)
@@ -69,6 +73,7 @@ public class BooksController {
     }
 
     @MutationMapping
+    @CachePut(value = "books", key = "#result.id")
     @Transactional
     public BookResponseDto createBook(@Argument("input") @Valid BookRequestDto input) {
         PersonEntity owner = personRepository.findById(input.getPersonId())
@@ -81,6 +86,7 @@ public class BooksController {
     }
 
     @MutationMapping
+    @CachePut(value = "books", key = "#id")
     @Transactional
     public BookResponseDto updateBook(
             @Argument Long id,
@@ -100,6 +106,7 @@ public class BooksController {
     }
 
     @MutationMapping
+    @CacheEvict(value = "books", key = "#id")
     @Transactional
     public boolean deleteBook(@Argument Long id) {
         BookEntity existing = bookRepository.findById(id)
