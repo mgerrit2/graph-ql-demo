@@ -17,6 +17,7 @@ extend type Person {
 }
 
 extend type Query {
+    books: [Book!]!
     bookById(id: ID!): Book
 }
 
