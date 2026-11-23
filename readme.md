@@ -33,6 +33,91 @@ GraphQL shines in **complex UIs, mobile apps with tight bandwidth, and multi-sou
 but it adds complexity around **query cost/depth limiting** (to prevent expensive nested queries), 
 **N+1 query resolution** (typically solved with DataLoader batching), and **HTTP caching** compared to straightforward CRUD REST APIs.
 
+## Query graphql
+### Sample query person
+```graphql
+query MyQuery {
+    persons {
+        firstname
+        lastname
+    }
+    personById(id: "1") {
+        firstname
+    }
+}
+```
+#### Hoppscotch
+##### Query
+```graphql
+query PersonQuery {
+    persons {
+        firstname
+        lastname
+    }
+}
+```
+
+##### Create
+###### Query
+```graphql
+mutation CreatePerson($input: PersonInput!) {
+    createPerson(input: $input) {
+        firstname
+        lastname
+        active
+        email
+    }
+}
+```
+###### Variables
+```json
+{
+    "input": {
+    "firstname": "Marcus",
+    "lastname": "Tullius",
+    "active": true,
+    "email": "marcus.tullius@example.com"
+    }
+}
+```
+##### update
+###### Query
+```graphql
+mutation UpdatePerson($id: ID!, $input: PersonInput!) {
+    updatePerson(id: $id, input: $input) {
+        firstname
+        lastname
+        active
+        email
+    }
+}
+```
+###### Variables
+```json
+{
+  "id": "1",
+  "input": {
+    "firstname": "John",
+    "lastname": "Doe Updated",
+    "active": true,
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+##### delete
+###### Query
+```graphql
+mutation DeletePerson($id: ID!) {
+    deletePerson(id: $id)
+}
+```
+###### Variables
+```json
+{
+  "id": "4"
+}
+```
 
 ## Graphql
 [Graphql ui](http://localhost:8080/graphiql)
