@@ -1,19 +1,22 @@
 package com.graph.ql.graph_ql_demo.controller;
 
 import com.graph.ql.graph_ql_demo.dto.PersonRequestDto;
+import com.graph.ql.graph_ql_demo.entity.PersonEntity;
 import com.graph.ql.graph_ql_demo.mappers.PersonMapper;
 import com.graph.ql.graph_ql_demo.repository.PersonRepository;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.persistence.EntityNotFoundException;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.MediaType;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,51 +31,59 @@ public class PersonsController {
     private final PersonRepository personRs;
     private final PersonMapper personMapper;
 
-    @Operation(summary = "get the list of persons",responses = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "OK",
-                    content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = PersonRequestDto.class))
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "4XX", // Catches 400, 401, 403, 404, etc.
-                    description = "Client Error (e.g., Bad Request, Unauthorized, Not Found, Validation)",
-                    content = @Content(
-                            schema = @Schema(implementation = ProblemDetail.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(
-                                    implementation = ProblemDetail.class
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "default",
-                    description = "Unexpected Error",
-                    content = @Content(
-                            schema = @Schema(
-                                    implementation = ProblemDetail.class
-                            )
-                    )
-            )
-    })
-    @GetMapping(value = "" ,
-            produces = {
-                    MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_PROBLEM_JSON_VALUE
-            }
-    )
-    public ResponseEntity<List<PersonRequestDto>> getPersons(){
-
+    @QueryMapping(name = "persons")
+    @Transactional(readOnly = true)
+    @Cacheable(value = "personsList", key = "'all'")
+    public List<PersonRequestDto> getPersons() {
         var result = personRs.findAll();
+        return this.personMapper.toResponseDtoList(result);
+    }
 
-        return ResponseEntity.ok(this.personMapper.toResponseDtoList(result));
+    @QueryMapping()
+    @Cacheable(value = "persons", key = "#id")
+    public PersonRequestDto personById(@Argument Long id) {
+        var result = personRs.findById(id);
+        return this.personMapper.toResponseDto(result.get());
+    }
+
+    @MutationMapping
+    @Transactional
+    @CacheEvict(value = "personsList", allEntries = true)
+    public PersonRequestDto createPerson(@Argument("input") @Valid PersonRequestDto input) {
+        PersonEntity entity = this.personMapper.toEntity(input);
+        PersonEntity saved = personRs.save(entity);
+        return this.personMapper.toResponseDto(saved);
+    }
+
+    @MutationMapping
+    @Transactional
+    @Caching(
+            put = @CachePut(value = "persons", key = "#id"),
+            evict = @CacheEvict(value = "personsList", allEntries = true)
+    )
+    public PersonRequestDto updatePerson(
+            @Argument Long id,
+            @Argument("input") @Valid PersonRequestDto input) {
+        PersonEntity existing = personRs.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Person not found with id: " + id));
+
+        this.personMapper.updateEntityFromDto(input, existing);
+        PersonEntity saved = personRs.save(existing);
+        return this.personMapper.toResponseDto(saved);
+    }
+
+    @MutationMapping
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "persons", key = "#id"),
+            @CacheEvict(value = "personsList", allEntries = true)
+    })
+    public boolean deletePerson(@Argument Long id) {
+        PersonEntity existing = personRs.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Person not found with id: " + id));
+
+        personRs.delete(existing);
+        return true;
     }
 
 }
