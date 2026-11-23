@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PersonRequestDto {
 
+    private long id;
+
     @Size(max = 50, message = "First name must not exceed 50 characters")
     private String firstname;
 
