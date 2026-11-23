@@ -2,57 +2,169 @@
   {
     "v": 11,
     "name": "graph-ql-demo",
-    "folders": [],
-    "requests": [
+    "folders": [
       {
-        "v": 9,
-        "name": "Persons list",
-        "url": "http://localhost:8080/graphql",
-        "headers": [],
-        "query": "query PersonQuery {\n    persons {\n      \tid\n        firstname\n        lastname\n    }\n}",
-        "variables": "",
+        "v": 11,
+        "name": "persons",
+        "folders": [],
+        "requests": [
+          {
+            "v": 9,
+            "name": "Persons list",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "query PersonQuery {\n    persons {\n      \tid\n        firstname\n        lastname\n      \tactive\n    }\n}",
+            "variables": "",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "Persons - create",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "mutation CreatePerson($input: PersonInput!) {\n  createPerson(input: $input) {\n    firstname\n    lastname\n    active\n    email\n  }\n}",
+            "variables": "{\n    \"input\": {\n    \"firstname\": \"Marcus\",\n    \"lastname\": \"Gerrits\",\n    \"active\": true,\n    \"email\": \"marcus.tullius@example.com\"\n    }\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "Persons - update",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "mutation UpdatePerson($id: ID!, $input: PersonInput!) {\n  updatePerson(id: $id, input: $input) {\n    firstname\n    lastname\n    active\n    email\n  }\n}\n",
+            "variables": "{\n  \"id\": \"1\",\n  \"input\": {\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe Updated\",\n    \"active\": true,\n    \"email\": \"john.doe@example.com\"\n  }\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "Persons - delete",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "mutation DeletePerson($id: ID!) {\n  deletePerson(id: $id)\n}\n\n",
+            "variables": "{\n  \"id\": \"5\"\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "Persons by id",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "query PersonById($id: ID!) {\n  personById(id: $id) {\n    id\n    firstname\n    lastname\n    email\n    active\n  }\n}",
+            "variables": "{\n  \"id\": \"2\"\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "Persons with books",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "query PersonsWithBooks {\n  persons {\n    id\n    firstname\n    lastname\n    books {\n      id\n      title\n      isbn\n      active\n    }\n  }\n}",
+            "variables": "{\n  \"id\": \"1\"\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          }
+        ],
         "auth": {
-          "authType": "inherit",
-          "authActive": true
-        }
+          "authActive": true,
+          "authType": "inherit"
+        },
+        "headers": [],
+        "variables": [],
+        "description": null
       },
       {
-        "v": 9,
-        "name": "Persons - create",
-        "url": "http://localhost:8080/graphql",
-        "headers": [],
-        "query": "mutation CreatePerson($input: PersonInput!) {\n  createPerson(input: $input) {\n    firstname\n    lastname\n    active\n    email\n  }\n}",
-        "variables": "{\n    \"input\": {\n    \"firstname\": \"Marcus\",\n    \"lastname\": \"Gerrits\",\n    \"active\": true,\n    \"email\": \"marcus.tullius@example.com\"\n    }\n}",
+        "v": 11,
+        "name": "books",
+        "folders": [],
+        "requests": [
+          {
+            "v": 9,
+            "name": "book by id",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "query BookById($id: ID!) {\n  bookById(id: $id) {\n    id\n    title\n    isbn\n    active\n  }\n}",
+            "variables": "{\n  \"id\": \"2\"\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "book list",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "query BookQuery {\n    books {\n      \tid\n        title\n        isbn\n      \tactive\n    }\n}",
+            "variables": "{\n  \"id\": \"2\"\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "book create",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "mutation CreateBook($input: BookInput!) {\n  createBook(input: $input) {\n    id\n    title\n    isbn\n    active\n  }\n}",
+            "variables": "{\n  \"input\": {\n    \"personId\": \"1\",\n    \"title\": \"Domain-Driven Design\",\n    \"isbn\": \"978-0321125217\",\n    \"active\": true\n  }\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "book update",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "mutation UpdateBook($id: ID!, $input: BookInput!) {\n  updateBook(id: $id, input: $input) {\n    id\n    title\n    isbn\n    active\n  }\n}",
+            "variables": "{\n  \"id\": \"1\",\n  \"input\": {\n    \"personId\": \"2\",\n    \"title\": \"Spring in Action (6th Edition)\",\n    \"isbn\": \"978-1617294945\",\n    \"active\": true\n  }\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          },
+          {
+            "v": 9,
+            "name": "book delete",
+            "url": "http://localhost:8080/graphql",
+            "headers": [],
+            "query": "mutation DeleteBook($id: ID!) {\n  deleteBook(id: $id)\n}",
+            "variables": "{\n  \"id\": \"3\"\n}",
+            "auth": {
+              "authType": "inherit",
+              "authActive": true
+            }
+          }
+        ],
         "auth": {
           "authType": "inherit",
           "authActive": true
-        }
-      },
-      {
-        "v": 9,
-        "name": "Persons - update",
-        "url": "http://localhost:8080/graphql",
+        },
         "headers": [],
-        "query": "mutation UpdatePerson($id: ID!, $input: PersonInput!) {\n  updatePerson(id: $id, input: $input) {\n    firstname\n    lastname\n    active\n    email\n  }\n}\n",
-        "variables": "{\n  \"id\": \"1\",\n  \"input\": {\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe Updated\",\n    \"active\": true,\n    \"email\": \"john.doe@example.com\"\n  }\n}",
-        "auth": {
-          "authType": "inherit",
-          "authActive": true
-        }
-      },
-      {
-        "v": 9,
-        "name": "Persons - delete",
-        "url": "http://localhost:8080/graphql",
-        "headers": [],
-        "query": "mutation DeletePerson($id: ID!) {\n  deletePerson(id: $id)\n}\n\n",
-        "variables": "{\n  \"id\": \"5\"\n}",
-        "auth": {
-          "authType": "inherit",
-          "authActive": true
-        }
+        "variables": [],
+        "description": null
       }
     ],
+    "requests": [],
     "auth": {
       "authType": "inherit",
       "authActive": true
