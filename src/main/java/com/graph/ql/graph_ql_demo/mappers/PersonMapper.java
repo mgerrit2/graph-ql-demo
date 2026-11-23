@@ -18,6 +18,7 @@ import java.util.Optional;
 public interface PersonMapper {
 
     // Maps Request DTO to a new Entity
+    @Mapping(target = "books", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
@@ -27,6 +28,7 @@ public interface PersonMapper {
     PersonEntity toEntity(PersonRequestDto dto);
 
     // Updates an existing Entity from a Request DTO (ignores audit/system fields)
+    @Mapping(target = "books", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
