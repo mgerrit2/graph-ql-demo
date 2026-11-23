@@ -34,6 +34,11 @@ but it adds complexity around **query cost/depth limiting** (to prevent expensiv
 **N+1 query resolution** (typically solved with DataLoader batching), and **HTTP caching** compared to straightforward CRUD REST APIs.
 
 ## Query graphql
+
+### Database model overview
+
+![uml-graph-ql-demo.jpg](images/uml-graph-ql-demo.jpg)
+
 ### Sample query person
 ```graphql
 query MyQuery {
