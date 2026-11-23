@@ -1,0 +1,64 @@
+[
+  {
+    "v": 11,
+    "name": "graph-ql-demo",
+    "folders": [],
+    "requests": [
+      {
+        "v": 9,
+        "name": "Persons list",
+        "url": "http://localhost:8080/graphql",
+        "headers": [],
+        "query": "query PersonQuery {\n    persons {\n      \tid\n        firstname\n        lastname\n    }\n}",
+        "variables": "",
+        "auth": {
+          "authType": "inherit",
+          "authActive": true
+        }
+      },
+      {
+        "v": 9,
+        "name": "Persons - create",
+        "url": "http://localhost:8080/graphql",
+        "headers": [],
+        "query": "mutation CreatePerson($input: PersonInput!) {\n  createPerson(input: $input) {\n    firstname\n    lastname\n    active\n    email\n  }\n}",
+        "variables": "{\n    \"input\": {\n    \"firstname\": \"Marcus\",\n    \"lastname\": \"Gerrits\",\n    \"active\": true,\n    \"email\": \"marcus.tullius@example.com\"\n    }\n}",
+        "auth": {
+          "authType": "inherit",
+          "authActive": true
+        }
+      },
+      {
+        "v": 9,
+        "name": "Persons - update",
+        "url": "http://localhost:8080/graphql",
+        "headers": [],
+        "query": "mutation UpdatePerson($id: ID!, $input: PersonInput!) {\n  updatePerson(id: $id, input: $input) {\n    firstname\n    lastname\n    active\n    email\n  }\n}\n",
+        "variables": "{\n  \"id\": \"1\",\n  \"input\": {\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe Updated\",\n    \"active\": true,\n    \"email\": \"john.doe@example.com\"\n  }\n}",
+        "auth": {
+          "authType": "inherit",
+          "authActive": true
+        }
+      },
+      {
+        "v": 9,
+        "name": "Persons - delete",
+        "url": "http://localhost:8080/graphql",
+        "headers": [],
+        "query": "mutation DeletePerson($id: ID!) {\n  deletePerson(id: $id)\n}\n\n",
+        "variables": "{\n  \"id\": \"5\"\n}",
+        "auth": {
+          "authType": "inherit",
+          "authActive": true
+        }
+      }
+    ],
+    "auth": {
+      "authType": "inherit",
+      "authActive": true
+    },
+    "headers": [],
+    "variables": [],
+    "description": null
+  }
+]
