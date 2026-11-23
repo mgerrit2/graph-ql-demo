@@ -56,6 +56,12 @@ public class BooksController {
 
     @QueryMapping
     @Transactional(readOnly = true)
+    public List<BookResponseDto> books() {
+        return bookMapper.toResponseDtoList(bookRepository.findAll());
+    }
+
+    @QueryMapping
+    @Transactional(readOnly = true)
     public BookResponseDto bookById(@Argument Long id) {
         return bookRepository.findById(id)
                 .map(bookMapper::toResponseDto)
