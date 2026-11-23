@@ -6,6 +6,7 @@ import lombok.*;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -23,7 +24,8 @@ import java.util.Optional;
 @Builder
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE persons SET active = false WHERE id = ? AND record_version = ?")
+@SQLDelete(sql = "UPDATE person SET active = false WHERE id = ? AND record_version = ?")
+@SQLRestriction("active = true")
 @Entity
 @Table(name = "person")
 public class PersonEntity {
