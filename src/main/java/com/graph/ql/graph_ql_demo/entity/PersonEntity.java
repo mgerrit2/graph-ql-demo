@@ -14,6 +14,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -117,9 +119,26 @@ public class PersonEntity {
      */
     @Override
     public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .toString();
+        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE);
+        builder.setExcludeFieldNames("books");
+        return builder.toString();
     }
+
+    //region mapping
+    @Builder.Default
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookEntity> books = new ArrayList<>();
+
+    public void addBook(BookEntity book) {
+        books.add(book);
+        book.setPerson(this);
+    }
+
+    public void removeBook(BookEntity book) {
+        books.remove(book);
+        book.setPerson(null);
+    }
+    //endregion
 
     //region Hash and equals code
     @Override
