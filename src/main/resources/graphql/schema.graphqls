@@ -1,3 +1,31 @@
+input BookInput {
+    personId: ID!
+    title: String!
+    isbn: String
+    active: Boolean = true
+}
+
+type Book {
+    id: ID!
+    title: String!
+    isbn: String
+    active: Boolean!
+}
+
+extend type Person {
+    books: [Book!]!
+}
+
+extend type Query {
+    bookById(id: ID!): Book
+}
+
+extend type Mutation {
+    createBook(input: BookInput!): Book!
+    updateBook(id: ID!, input: BookInput!): Book!
+    deleteBook(id: ID!): Boolean!
+}
+
 input PersonInput {
     firstname: String
     lastname: String
