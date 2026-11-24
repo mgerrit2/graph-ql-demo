@@ -3,7 +3,12 @@ package com.graph.ql.graph_ql_demo.mappers;
 import com.graph.ql.graph_ql_demo.dto.book.BookRequestDto;
 import com.graph.ql.graph_ql_demo.dto.book.BookResponseDto;
 import com.graph.ql.graph_ql_demo.entity.BookEntity;
-import org.mapstruct.*;
+import org.mapstruct.Builder;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
 
 import java.util.List;
 
