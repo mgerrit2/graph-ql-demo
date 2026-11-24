@@ -1,5 +1,6 @@
 package com.graph.ql.graph_ql_demo.dto;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PersonRequestDto {
 
+    @NotNull(message = "personId is required")
     private long id;
 
     @Size(max = 50, message = "First name must not exceed 50 characters")
