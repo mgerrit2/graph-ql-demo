@@ -1,5 +1,6 @@
 package com.graph.ql.graph_ql_demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PersonRequestDto {
 
     @NotNull(message = "personId is required")
@@ -23,8 +25,7 @@ public class PersonRequestDto {
     @Size(max = 50, message = "Last name must not exceed 50 characters")
     private String lastname;
 
-    @Builder.Default
-    private boolean active = false;
+    private Boolean active;
 
     @Pattern(regexp = "^$|^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "Invalid email format")
     @Size(max = 255, message = "Email must not exceed 255 characters")
