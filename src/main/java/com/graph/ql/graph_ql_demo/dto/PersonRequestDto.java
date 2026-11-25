@@ -24,7 +24,7 @@ public class PersonRequestDto {
     private String lastname;
 
     @Builder.Default
-    private boolean active = true;
+    private boolean active = false;
 
     @Pattern(regexp = "^$|^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "Invalid email format")
     @Size(max = 255, message = "Email must not exceed 255 characters")
