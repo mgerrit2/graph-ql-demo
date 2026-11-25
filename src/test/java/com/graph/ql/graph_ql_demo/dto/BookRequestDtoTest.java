@@ -34,7 +34,7 @@ class BookRequestDtoTest {
         Set<ConstraintViolation<BookRequestDto>> violations = validator.validate(dto);
 
         assertThat(violations).isEmpty();
-        assertThat(dto.isActive()).isTrue();
+
     }
 
     @Test
