@@ -4,126 +4,218 @@ import com.graph.ql.graph_ql_demo.dto.PersonRequestDto;
 import com.graph.ql.graph_ql_demo.dto.book.BookRequestDto;
 import com.graph.ql.graph_ql_demo.dto.book.BookResponseDto;
 import com.graph.ql.graph_ql_demo.service.BooksService;
+import com.graph.ql.graph_ql_demo.service.PersonsService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest;
+import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@GraphQlTest({BooksController.class, PersonsController.class})
 class BooksControllerTest {
 
-    @Mock
+    @Autowired
+    private GraphQlTester graphQlTester;
+
+    @MockitoBean
     private BooksService booksSv;
 
-    @InjectMocks
-    private BooksController booksController;
+    @MockitoBean
+    private PersonsService personsSv;
 
     @Test
-    void batchBooksShouldDelegateToBooksServiceList() {
-        PersonRequestDto person1 = PersonRequestDto.builder().id(1L).build();
-        PersonRequestDto person2 = PersonRequestDto.builder().id(2L).build();
+    void batchBooks_shouldResolveBooksForEachPerson() {
+        PersonRequestDto person1 = PersonRequestDto.builder().id(1L).firstname("Alice").build();
+        PersonRequestDto person2 = PersonRequestDto.builder().id(2L).firstname("Bob").build();
         List<PersonRequestDto> persons = List.of(person1, person2);
 
         BookResponseDto book1 = new BookResponseDto();
         book1.setId(10L);
 
-        Map<PersonRequestDto, List<BookResponseDto>> expected = Map.of(
+        given(personsSv.findAll()).willReturn(persons);
+        given(booksSv.list(persons)).willReturn(Map.of(
                 person1, List.of(book1),
                 person2, List.of()
-        );
-        when(booksSv.list(persons)).thenReturn(expected);
+        ));
 
-        Map<PersonRequestDto, List<BookResponseDto>> result = booksController.books(persons);
+        String query = """
+                query {
+                    persons {
+                        id
+                        books {
+                            id
+                        }
+                    }
+                }
+                """;
 
-        assertEquals(expected, result);
-        verify(booksSv).list(persons);
+        graphQlTester.document(query)
+                .execute()
+                .path("persons[0].books")
+                .entityList(BookResponseDto.class)
+                .hasSize(1)
+                .path("persons[1].books")
+                .entityList(BookResponseDto.class)
+                .hasSize(0);
+
+        verify(booksSv).list(any());
     }
 
     @Test
-    void booksShouldDelegateToBooksServiceListBooks() {
+    void books_shouldReturnListOfBooks() {
         BookResponseDto book = new BookResponseDto();
         book.setId(1L);
 
-        List<BookResponseDto> expected = List.of(book);
+        given(booksSv.listBooks()).willReturn(List.of(book));
 
-        when(booksSv.listBooks()).thenReturn(expected);
+        String query = """
+                query {
+                    books {
+                        id
+                    }
+                }
+                """;
 
-        List<BookResponseDto> result = booksController.books();
+        graphQlTester.document(query)
+                .execute()
+                .path("books")
+                .entityList(BookResponseDto.class)
+                .hasSize(1);
 
-        assertEquals(expected, result);
         verify(booksSv).listBooks();
     }
 
     @Test
-    void bookByIdShouldDelegateToBooksServiceBookById() {
-        BookResponseDto expected = new BookResponseDto();
-        expected.setId(5L);
-        when(booksSv.bookById(5L)).thenReturn(expected);
-
-        BookResponseDto result = booksController.bookById(5L);
-
-        assertEquals(expected, result);
-        verify(booksSv).bookById(5L);
-    }
-
-    @Test
-    void createBookShouldDelegateToBooksServiceCreateBook() {
-        BookRequestDto input = new BookRequestDto();
-        input.setPersonId(2L);
-
-        BookResponseDto expected = new BookResponseDto();
-        expected.setId(100L);
-        when(booksSv.createBook(input)).thenReturn(expected);
-
-        BookResponseDto result = booksController.createBook(input);
-
-        assertEquals(expected, result);
-        verify(booksSv).createBook(input);
-    }
-
-    @Test
-    void updateBookShouldDelegateWithInputThenIdToBooksServiceUpdateBook() {
-        Long id = 10L;
-        BookRequestDto input = new BookRequestDto();
-        input.setPersonId(2L);
-
+    void bookById_shouldReturnBookWhenFound() {
+        Long id = 5L;
         BookResponseDto expected = new BookResponseDto();
         expected.setId(id);
-        when(booksSv.updateBook(input, id)).thenReturn(expected);
 
-        BookResponseDto result = booksController.updateBook(id, input);
+        given(booksSv.bookById(id)).willReturn(expected);
 
-        assertEquals(expected, result);
-        verify(booksSv).updateBook(input, id);
+        String query = """
+                query($id: ID!) {
+                    bookById(id: $id) {
+                        id
+                    }
+                }
+                """;
+
+        graphQlTester.document(query)
+                .variable("id", id)
+                .execute()
+                .path("bookById")
+                .entity(BookResponseDto.class)
+                .isEqualTo(expected);
+
+        verify(booksSv).bookById(id);
     }
 
     @Test
-    void deleteBookShouldDelegateToBooksServiceDelete() {
-        when(booksSv.delete(12L)).thenReturn(true);
+    void createBook_shouldCreateAndReturnBook() {
+        BookResponseDto expected = new BookResponseDto();
+        expected.setId(100L);
 
-        boolean result = booksController.deleteBook(12L);
+        given(booksSv.createBook(any(BookRequestDto.class))).willReturn(expected);
 
-        assertTrue(result);
-        verify(booksSv).delete(12L);
+        String mutation = """
+            mutation($input: BookInput!) {
+                createBook(input: $input) {
+                    id
+                }
+            }
+            """;
+
+        graphQlTester.document(mutation)
+                .variable("input", Map.of(
+                        "title", "New Book Title",
+                        "personId", 2L
+                ))
+                .execute()
+                .path("createBook")
+                .entity(BookResponseDto.class)
+                .isEqualTo(expected);
+
+        verify(booksSv).createBook(any(BookRequestDto.class));
     }
 
     @Test
-    void deleteBookWhenServiceReturnsFalse_shouldReturnFalse() {
-        when(booksSv.delete(12L)).thenReturn(false);
+    void updateBook_shouldUpdateAndReturnBook() {
+        Long id = 10L;
+        BookResponseDto expected = new BookResponseDto();
+        expected.setId(id);
 
-        boolean result = booksController.deleteBook(12L);
+        given(booksSv.updateBook(any(BookRequestDto.class), eq(id))).willReturn(expected);
 
-        assertFalse(result);
-        verify(booksSv).delete(12L);
+        String mutation = """
+            mutation($id: ID!, $input: BookInput!) {
+                updateBook(id: $id, input: $input) {
+                    id
+                }
+            }
+            """;
+
+        graphQlTester.document(mutation)
+                .variable("id", id)
+                .variable("input", Map.of(
+                        "title", "Updated Book Title",
+                        "personId", 2L
+                ))
+                .execute()
+                .path("updateBook")
+                .entity(BookResponseDto.class)
+                .isEqualTo(expected);
+
+        verify(booksSv).updateBook(any(BookRequestDto.class), eq(id));
+    }
+
+    @Test
+    void deleteBook_shouldReturnTrueWhenDeleted() {
+        Long id = 12L;
+        given(booksSv.delete(id)).willReturn(true);
+
+        String mutation = """
+                mutation($id: ID!) {
+                    deleteBook(id: $id)
+                }
+                """;
+
+        graphQlTester.document(mutation)
+                .variable("id", id)
+                .execute()
+                .path("deleteBook")
+                .entity(Boolean.class)
+                .isEqualTo(true);
+
+        verify(booksSv).delete(id);
+    }
+
+    @Test
+    void deleteBook_shouldReturnFalseWhenNotDeleted() {
+        Long id = 12L;
+        given(booksSv.delete(id)).willReturn(false);
+
+        String mutation = """
+                mutation($id: ID!) {
+                    deleteBook(id: $id)
+                }
+                """;
+
+        graphQlTester.document(mutation)
+                .variable("id", id)
+                .execute()
+                .path("deleteBook")
+                .entity(Boolean.class)
+                .isEqualTo(false);
+
+        verify(booksSv).delete(id);
     }
 }
