@@ -48,7 +48,7 @@ public class PersonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "first_name", length = 50)
     private String firstname;
@@ -121,6 +121,10 @@ public class PersonEntity {
 
     public Optional<String> getLastModifiedBy() {
         return Optional.ofNullable(this.lastModifiedBy);
+    }
+
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(this.email);
     }
 
     //endregion
