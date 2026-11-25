@@ -9,7 +9,13 @@
 <property name="fileExtensions" value="java"/>
 
 <module name="TreeWalker">
-    <module name="AvoidStarImport"/>
+    <module name="AvoidStarImport">
+        <!-- allow Assertions.*-->
+        <property name="excludes"
+                  value="java.io,java.net,java.lang.Math,org.junit.jupiter.api.Assertions.*"/>
+        <property name="allowClassImports" value="false"/>
+        <property name="allowStaticMemberImports" value="true"/>
+    </module>
     <module name="TypeName"/>
     <module name="MethodName">
         <!--camelCase_with_underscores-->
