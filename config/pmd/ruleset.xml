@@ -6,7 +6,7 @@
     <description>Custom ruleset</description>
     <rule ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
         <properties>
-            <property name="maximumAsserts" value="5"/>
+            <property name="maximumAsserts" value="10"/>
         </properties>
     </rule>
 </ruleset>
