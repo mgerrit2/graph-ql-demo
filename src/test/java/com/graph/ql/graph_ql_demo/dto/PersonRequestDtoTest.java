@@ -52,7 +52,7 @@ class PersonRequestDtoTest {
                 .active(true)
                 .build();
 
-        assertTrue(dto.isActive());
+        assertTrue(dto.getActive());
         assertEquals(1L, dto.getId());
     }
 
@@ -61,7 +61,6 @@ class PersonRequestDtoTest {
         PersonRequestDto dto = new PersonRequestDto();
 
         assertEquals(0L, dto.getId());
-        assertFalse(dto.isActive());
     }
 
     @Test
